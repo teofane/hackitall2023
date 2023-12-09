@@ -13,27 +13,24 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static com.example.hackitall2023.gpt.ChatGPTController.extractMessageFromJSONResponse;
+
 @Controller
-public class ChatGPTController {
+public class ChatGPTKeywords {
     String apiKey = System.getenv("apikey");
 
-    @PostMapping("/chatgpt")
+    @PostMapping("/keywords")
     @ResponseBody
     public String getInformationAboutEvents(@RequestBody String input) {
-        String eventsDetails = UpcomingEventsController.events.stream().map(ev -> " Title is: " + ev.getTitle()
-                + " Description is " + ev.getDescription()
+        String eventsDetails = UpcomingEventsController.events.stream().map(ev -> " Description is " + ev.getDescription()
         ).reduce("", (a, b) -> a.concat(b));
 
-        String s = chatGPT("We have the following events: " + eventsDetails + ". Based on these events details, " +
-                "respond to the following question from a participant if it is related to them. Don't use any quotes in the response. " +
-                "If he is asking another thing unrelated, give him a valuable response only considering the initial event details: " +
-                input);
+        String s = keywords(input);
         return s;
     }
 
-    public String chatGPT(String prompt) {
+    public String keywords(String prompt) {
         String url = "https://api.openai.com/v1/chat/completions";
-        String model = "gpt-3.5-turbo";
 
         try {
             URL obj = new URL(url);
@@ -42,7 +39,13 @@ public class ChatGPTController {
             connection.setRequestProperty("Authorization", "Bearer " + apiKey);
             connection.setRequestProperty("Content-Type", "application/json");
 
-            String body = "{\"model\": \"" + model + "\", \"messages\": [{\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
+            // The request body
+            String body = "{\"model\": \"gpt-3.5-turbo\", \"messages\": [ {\n" +
+                    "\"role\": \"system\",\n" +
+                    "\"content\": \"You will be provided with a block of text, and your task is to extract a list of keywords from it.\"\n" +
+                    "},{\"role\": \"user\", \"content\": \"" + prompt + "\"}],\n" +
+                    "\"max_tokens\": 20,\n" +
+                    "\"top_p\": 1}";
             connection.setDoOutput(true);
             OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
             writer.write(body);
@@ -64,14 +67,5 @@ public class ChatGPTController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public static String extractMessageFromJSONResponse(String response) {
-        int start = response.indexOf("content") + 11;
-
-        int end = response.indexOf("}", start);
-
-        return response.substring(start, end);
-
     }
 }
