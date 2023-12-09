@@ -27,4 +27,5 @@ public class Event {
     List<String> keywords;
     Double latitude;
     Double longitude;
+    Integer points;
 }

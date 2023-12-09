@@ -2,6 +2,7 @@ package com.example.hackitall2023.gpt;
 
 import com.example.hackitall2023.UpcomingEventsController;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -14,6 +15,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 public class ChatGPTController {
     String apiKey = System.getenv("apikey");
 

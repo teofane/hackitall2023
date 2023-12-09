@@ -1,5 +1,6 @@
 package com.example.hackitall2023;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -8,6 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 public class Recommender {
 
     static List<String> stopWords = List.of("a", "about", "above", "across", "after", "again",
